@@ -415,9 +415,6 @@ export default function App() {
           <div className="pt-1">
             <ThemeSelect variant="grid" />
           </div>
-          <div className="pt-2">
-            <InstallPwaButton />
-          </div>
         </DialogContent>
       </Dialog>
     )
@@ -531,6 +528,7 @@ export default function App() {
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
+                  <InstallPwaButton ui="header" />
                   <ThemePickerDialog />
                   <SelectRange
                     metadata={metaData}
@@ -633,7 +631,8 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="flex justify-center sm:col-start-3 sm:row-start-1 sm:justify-end">
+                <div className="flex justify-center gap-2 sm:col-start-3 sm:row-start-1 sm:justify-end">
+                  <InstallPwaButton ui="header" />
                   <ThemeSelect />
                 </div>
 
