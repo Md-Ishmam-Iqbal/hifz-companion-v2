@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react'
 
-import { applyTheme, getStoredTheme, storeTheme, type ThemeId } from '@/lib/theme'
+import { THEME_OPTIONS, applyTheme, getStoredTheme, storeTheme, type ThemeId } from '@/lib/theme'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
+import { Check } from 'lucide-react'
 
-const THEMES: Array<{ id: ThemeId; label: string; bg: string; border: string }> = [
-  { id: 'desert', label: 'Desert Dawn', bg: '#fbf3e6', border: 'rgba(27, 36, 48, 0.20)' },
-  { id: 'coast', label: 'Sea Glass', bg: '#f3fbff', border: 'rgba(15, 23, 42, 0.16)' },
-  { id: 'library', label: 'Library Lamp', bg: '#090806', border: 'rgba(240, 195, 106, 0.40)' },
-  { id: 'cedar', label: 'Cedar Night', bg: '#090706', border: 'rgba(249, 115, 22, 0.42)' },
-]
+type Props = {
+  variant?: 'select' | 'grid'
+}
 
-export default function ThemeSelect() {
+export default function ThemeSelect({ variant = 'select' }: Props) {
   const [theme, setTheme] = useState<ThemeId>('desert')
 
-  const selected = THEMES.find((t) => t.id === theme) ?? THEMES[0]
+  const selected = THEME_OPTIONS.find((t) => t.id === theme) ?? THEME_OPTIONS[0]
 
   useEffect(() => {
     const fromStorage = getStoredTheme()
@@ -36,6 +35,60 @@ export default function ThemeSelect() {
     storeTheme(next)
   }
 
+  if (variant === 'grid') {
+    return (
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+        {THEME_OPTIONS.map((t) => {
+          const isSelected = t.id === theme
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => onChange(t.id)}
+              aria-pressed={isSelected}
+              className={cn(
+                'group relative flex flex-col items-start gap-2 rounded-xl border px-3 py-3 text-left transition-colors',
+                'bg-background/40 hover:bg-background/55',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                isSelected ? 'border-ring' : 'border-border/60',
+              )}
+            >
+              <span
+                className={cn(
+                  'absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full border transition-colors',
+                  isSelected
+                    ? 'border-ring bg-primary text-primary-foreground'
+                    : 'border-border/60 bg-background/30 text-muted-foreground',
+                )}
+              >
+                <Check className={cn('h-4 w-4 transition-opacity', isSelected ? 'opacity-100' : 'opacity-0')} />
+              </span>
+
+              <span className="flex items-center gap-3">
+                <span
+                  className={cn(
+                    'relative h-9 w-9 shrink-0 rounded-full border',
+                    isSelected ? 'border-ring' : 'border-border/70',
+                  )}
+                  style={{ background: t.bg }}
+                >
+                  <span
+                    className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border border-background"
+                    style={{ background: t.accent }}
+                  />
+                </span>
+              </span>
+
+              <span className="pr-7">
+                <span className="block whitespace-normal text-sm font-medium leading-tight">{t.label}</span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <div className="w-[190px] sm:w-[220px]">
       <Select value={theme} onValueChange={onChange}>
@@ -49,7 +102,7 @@ export default function ThemeSelect() {
           </span>
         </SelectTrigger>
         <SelectContent>
-          {THEMES.map((t) => (
+          {THEME_OPTIONS.map((t) => (
             <SelectItem key={t.id} value={t.id}>
               <span className="inline-flex items-center gap-2">
                 <span
