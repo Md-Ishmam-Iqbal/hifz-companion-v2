@@ -54,40 +54,46 @@ html[data-theme='desert'] {
 }
 
 html[data-theme='coast'] {
-  --background: 198 45% 96%;
+  --background: 190 30% 97%;
   --foreground: 215 28% 14%;
 
-  --card: 198 45% 98%;
+  --card: 190 30% 98%;
   --card-foreground: 215 28% 14%;
 
-  --popover: 198 45% 98%;
+  --popover: 190 30% 98%;
   --popover-foreground: 215 28% 14%;
 
-  --primary: 198 78% 38%;
-  --primary-foreground: 198 45% 96%;
+  --primary: 190 56% 33%;
+  --primary-foreground: 190 30% 97%;
 
-  --secondary: 200 20% 90%;
+  --secondary: 32 22% 92%;
   --secondary-foreground: 215 28% 14%;
 
-  --muted: 200 22% 92%;
+  --muted: 30 22% 94%;
   --muted-foreground: 215 16% 36%;
 
-  --accent: 212 55% 30%;
-  --accent-foreground: 198 45% 98%;
+  --accent: 195 40% 24%;
+  --accent-foreground: 190 30% 98%;
 
   --destructive: 0 72% 44%;
-  --destructive-foreground: 198 45% 96%;
+  --destructive-foreground: 190 30% 97%;
 
-  --border: 205 18% 82%;
-  --input: 205 18% 82%;
-  --ring: 198 78% 38%;
+  --border: 28 14% 84%;
+  --input: 28 14% 84%;
+  --ring: 190 56% 33%;
 
-  --app-bg: radial-gradient(900px circle at 18% 14%, rgba(14, 165, 233, 0.12), transparent 58%),
-    radial-gradient(900px circle at 85% 12%, rgba(34, 211, 238, 0.10), transparent 60%),
-    linear-gradient(to bottom, #f3fbff, #eaf6fb);
-  --app-pattern: radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.08) 1px, transparent 0);
-  --app-pattern-size: 34px 34px;
-  --app-pattern-opacity: 0.14;
+  --app-bg: radial-gradient(900px circle at 18% 14%, rgba(14, 116, 144, 0.10), transparent 60%),
+    radial-gradient(900px circle at 85% 10%, rgba(204, 90, 42, 0.07), transparent 62%),
+    linear-gradient(to bottom, #f6fbfb, #f6f0e8);
+  --app-pattern: repeating-linear-gradient(
+      -45deg,
+      rgba(15, 23, 42, 0.05) 0px,
+      rgba(15, 23, 42, 0.05) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  --app-pattern-size: auto;
+  --app-pattern-opacity: 0.10;
   --app-pattern-blend: multiply;
 
   --panel-shadow: 0 18px 70px rgba(15, 23, 42, 0.10);
