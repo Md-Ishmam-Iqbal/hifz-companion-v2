@@ -7,6 +7,7 @@ import { fetchInitialAyah, fetchMetadata, fetchQuran } from '@/api/quran'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SelectRange from '@/components/SelectRange'
 import ThemeSelect from '@/components/ThemeSelect'
+import InstallPwaButton from '@/components/InstallPwaButton'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -413,6 +414,9 @@ export default function App() {
           </DialogHeader>
           <div className="pt-1">
             <ThemeSelect variant="grid" />
+          </div>
+          <div className="pt-2">
+            <InstallPwaButton />
           </div>
         </DialogContent>
       </Dialog>
