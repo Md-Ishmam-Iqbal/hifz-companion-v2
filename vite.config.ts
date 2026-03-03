@@ -25,10 +25,16 @@ export default defineConfig({
       filename: 'sw.ts',
       injectRegister: null,
       registerType: 'autoUpdate',
-      includeAssets: ['pwa-192.png', 'pwa-512.png', 'apple-touch-icon.png', 'favicon.ico'],
+      includeAssets: [
+        'pwa-192.png',
+        'pwa-512.png',
+        'pwa-maskable-512.png',
+        'apple-touch-icon.png',
+        'favicon.ico',
+      ],
       manifest: {
         name: 'Hifz Companion',
-        short_name: 'Hifz',
+        short_name: 'Hifz Companion',
         description: 'Calm hifz practice: recite, then reveal the answer.',
         start_url: '.',
         scope: '.',
@@ -47,7 +53,7 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            src: 'pwa-512.png',
+            src: 'pwa-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
