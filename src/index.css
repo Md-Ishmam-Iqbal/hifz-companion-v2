@@ -1,0 +1,290 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 0.75rem;
+}
+
+html[data-theme='desert'] {
+  --background: 36 54% 96%;
+  --foreground: 218 27% 14%;
+
+  --card: 36 54% 98%;
+  --card-foreground: 218 27% 14%;
+
+  --popover: 36 54% 98%;
+  --popover-foreground: 218 27% 14%;
+
+  --primary: 17 63% 50%;
+  --primary-foreground: 36 54% 96%;
+
+  --secondary: 35 26% 90%;
+  --secondary-foreground: 218 27% 14%;
+
+  --muted: 35 26% 92%;
+  --muted-foreground: 216 16% 36%;
+
+  --accent: 224 44% 36%;
+  --accent-foreground: 36 54% 98%;
+
+  --destructive: 0 72% 44%;
+  --destructive-foreground: 36 54% 96%;
+
+  --border: 32 20% 82%;
+  --input: 32 20% 82%;
+  --ring: 17 63% 50%;
+
+  --app-bg: radial-gradient(900px circle at 20% 10%, rgba(196, 106, 74, 0.14), transparent 55%),
+    radial-gradient(900px circle at 85% 8%, rgba(46, 58, 140, 0.12), transparent 55%),
+    linear-gradient(to bottom, #fbf3e6, #f4e7d7);
+  --app-pattern: repeating-linear-gradient(
+      -45deg,
+      rgba(27, 36, 48, 0.05) 0px,
+      rgba(27, 36, 48, 0.05) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+  --app-pattern-size: auto;
+  --app-pattern-opacity: 0.18;
+  --app-pattern-blend: multiply;
+
+  --panel-shadow: 0 18px 70px rgba(27, 36, 48, 0.10);
+  --panel-sheen: linear-gradient(to bottom, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.00));
+}
+
+html[data-theme='coast'] {
+  --background: 198 45% 96%;
+  --foreground: 215 28% 14%;
+
+  --card: 198 45% 98%;
+  --card-foreground: 215 28% 14%;
+
+  --popover: 198 45% 98%;
+  --popover-foreground: 215 28% 14%;
+
+  --primary: 198 78% 38%;
+  --primary-foreground: 198 45% 96%;
+
+  --secondary: 200 20% 90%;
+  --secondary-foreground: 215 28% 14%;
+
+  --muted: 200 22% 92%;
+  --muted-foreground: 215 16% 36%;
+
+  --accent: 212 55% 30%;
+  --accent-foreground: 198 45% 98%;
+
+  --destructive: 0 72% 44%;
+  --destructive-foreground: 198 45% 96%;
+
+  --border: 205 18% 82%;
+  --input: 205 18% 82%;
+  --ring: 198 78% 38%;
+
+  --app-bg: radial-gradient(900px circle at 18% 14%, rgba(14, 165, 233, 0.12), transparent 58%),
+    radial-gradient(900px circle at 85% 12%, rgba(34, 211, 238, 0.10), transparent 60%),
+    linear-gradient(to bottom, #f3fbff, #eaf6fb);
+  --app-pattern: radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.08) 1px, transparent 0);
+  --app-pattern-size: 34px 34px;
+  --app-pattern-opacity: 0.14;
+  --app-pattern-blend: multiply;
+
+  --panel-shadow: 0 18px 70px rgba(15, 23, 42, 0.10);
+  --panel-sheen: linear-gradient(to bottom, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.00));
+}
+
+
+html[data-theme='library'] {
+  --background: 30 18% 6%;
+  --foreground: 36 35% 92%;
+
+  --card: 24 18% 10%;
+  --card-foreground: 36 35% 92%;
+
+  --popover: 24 18% 9%;
+  --popover-foreground: 36 35% 92%;
+
+  --primary: 40 88% 66%;
+  --primary-foreground: 24 18% 10%;
+
+  --secondary: 24 16% 16%;
+  --secondary-foreground: 36 35% 92%;
+
+  --muted: 24 16% 14%;
+  --muted-foreground: 30 18% 68%;
+
+  /* keep accent warm (no green hover) */
+  --accent: 32 24% 18%;
+  --accent-foreground: 36 35% 92%;
+
+  --destructive: 0 72% 42%;
+  --destructive-foreground: 36 35% 92%;
+
+  --border: 24 18% 18%;
+  --input: 24 18% 18%;
+  --ring: 40 88% 66%;
+
+  --app-bg: radial-gradient(900px circle at 50% 20%, rgba(240, 195, 106, 0.16), transparent 58%),
+    radial-gradient(1100px circle at 14% 18%, rgba(47, 93, 80, 0.14), transparent 62%),
+    linear-gradient(to bottom, #090806, #050403);
+  --app-pattern: radial-gradient(circle at 1px 1px, rgba(240, 195, 106, 0.12) 1px, transparent 0);
+  --app-pattern-size: 30px 30px;
+  --app-pattern-opacity: 0.30;
+  --app-pattern-blend: overlay;
+
+  --panel-shadow: 0 26px 90px rgba(0, 0, 0, 0.55);
+  --panel-sheen: linear-gradient(to bottom, rgba(240, 195, 106, 0.16), rgba(240, 195, 106, 0.00));
+}
+
+html[data-theme='cedar'] {
+  --background: 22 20% 6%;
+  --foreground: 36 35% 92%;
+
+  --card: 22 20% 10%;
+  --card-foreground: 36 35% 92%;
+
+  --popover: 22 20% 9%;
+  --popover-foreground: 36 35% 92%;
+
+  --primary: 20 78% 58%;
+  --primary-foreground: 22 20% 10%;
+
+  --secondary: 24 14% 16%;
+  --secondary-foreground: 36 35% 92%;
+
+  --muted: 24 14% 14%;
+  --muted-foreground: 30 16% 68%;
+
+  --accent: 30 22% 18%;
+  --accent-foreground: 36 35% 92%;
+
+  --destructive: 0 72% 42%;
+  --destructive-foreground: 36 35% 92%;
+
+  --border: 24 18% 18%;
+  --input: 24 18% 18%;
+  --ring: 20 78% 58%;
+
+  --app-bg: radial-gradient(900px circle at 50% 18%, rgba(249, 115, 22, 0.14), transparent 60%),
+    radial-gradient(1100px circle at 16% 16%, rgba(120, 53, 15, 0.18), transparent 62%),
+    linear-gradient(to bottom, #090706, #050403);
+  --app-pattern: radial-gradient(circle at 1px 1px, rgba(249, 115, 22, 0.14) 1px, transparent 0);
+  --app-pattern-size: 32px 32px;
+  --app-pattern-opacity: 0.26;
+  --app-pattern-blend: overlay;
+
+  --panel-shadow: 0 26px 90px rgba(0, 0, 0, 0.60);
+  --panel-sheen: linear-gradient(to bottom, rgba(249, 115, 22, 0.12), rgba(249, 115, 22, 0.00));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  --font-ui: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-arabic: 'Scheherazade New', 'Noto Naskh Arabic', 'Amiri', serif;
+  --app-pattern-opacity: 0.28;
+  --app-pattern-blend: overlay;
+  --panel-shadow: 0 18px 70px rgba(0, 0, 0, 0.18);
+  --panel-sheen: linear-gradient(to bottom, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.00));
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: var(--app-bg);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--app-pattern);
+  background-size: var(--app-pattern-size);
+  opacity: var(--app-pattern-opacity);
+  mix-blend-mode: var(--app-pattern-blend);
+}
+
+
+.hc-panel {
+  position: relative;
+  box-shadow: var(--panel-shadow);
+}
+
+.hc-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: var(--panel-sheen);
+  opacity: 0.85;
+}
+
+.hc-pill {
+  border-radius: 999px;
+}
+
+
+
+html[data-theme='desert'] .hc-physical {
+  border-style: dashed;
+  border-color: hsl(var(--border));
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.10));
+}
+
+html[data-theme='library'] .hc-physical {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 1px hsl(var(--ring) / 0.18), var(--panel-shadow);
+}
+
+html[data-theme='cedar'] .hc-physical {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 1px hsl(var(--ring) / 0.16), var(--panel-shadow);
+}
+
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(720deg);
+  }
+}
+
+@keyframes hcAyahEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.loading-spinner {
+  width: 45px;
+  height: 45px;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #39b7dab5;
+  border-radius: 50%;
+  animation: spinner 1.5s linear infinite;
+}
