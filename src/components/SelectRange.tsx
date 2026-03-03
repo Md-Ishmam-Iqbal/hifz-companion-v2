@@ -207,7 +207,7 @@ export default function SelectRange({
     <div className="w-fit">
       <Button
         variant="outline"
-        className="h-11 gap-2 rounded-full border-border/60 bg-background/40 px-4 text-sm hover:border-ring hover:bg-primary/10 hover:text-foreground sm:text-base"
+        className="h-9 gap-2 rounded-full border-border/60 bg-background/40 px-3 text-sm shadow-none hover:translate-y-0 hover:border-ring hover:bg-primary/10 hover:text-foreground hover:shadow-none sm:h-11 sm:px-4"
         onClick={() => setOpen(true)}
       >
         <SlidersHorizontal className="h-4 w-4" />
@@ -312,7 +312,7 @@ export default function SelectRange({
           )}
 
           {scope === 'surah_range' && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <div className="mb-2 text-xs text-muted-foreground">Start (Surah)</div>
                 <Select value={String(draftStart.chapter)} onValueChange={handleStartRangeChapter}>
@@ -339,9 +339,9 @@ export default function SelectRange({
           )}
 
           {scope === 'custom' && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <div className="mb-2 text-xs text-muted-foreground">Start (Surah)</div>
+                <div className="mb-1 text-[10px] text-muted-foreground">Start (Surah)</div>
                 <Select value={String(draftStart.chapter)} onValueChange={handleStartRangeChapter}>
                   <SelectTrigger>
                     <SelectValue placeholder="Start" />
@@ -350,26 +350,26 @@ export default function SelectRange({
                     {chapterItems}
                   </SelectContent>
                 </Select>
-
-                <div className="mt-3">
-                  <div className="mb-2 text-[10px] text-muted-foreground">Start (Ayah)</div>
-                  <Select value={String(draftStart.verse)} onValueChange={handleSelectStartRangeAyah}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Ayah" />
-                    </SelectTrigger>
-                    <SelectContent style={{ ['--select-max-height' as never]: '175px' }}>
-                      {startVerseList.map((ayah) => (
-                        <SelectItem key={ayah.verse} value={String(ayah.verse)}>
-                          {ayah.verse}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               <div>
-                <div className="mb-2 text-xs text-muted-foreground">End (Surah)</div>
+                <div className="mb-1 text-[10px] text-muted-foreground">Start (Ayah)</div>
+                <Select value={String(draftStart.verse)} onValueChange={handleSelectStartRangeAyah}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ayah" />
+                  </SelectTrigger>
+                  <SelectContent style={{ ['--select-max-height' as never]: '175px' }}>
+                    {startVerseList.map((ayah) => (
+                      <SelectItem key={ayah.verse} value={String(ayah.verse)}>
+                        {ayah.verse}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <div className="mb-1 text-[10px] text-muted-foreground">End (Surah)</div>
                 <Select value={String(draftEnd.chapter)} onValueChange={handleEndRangeChapter}>
                   <SelectTrigger>
                     <SelectValue placeholder="End" />
@@ -378,29 +378,29 @@ export default function SelectRange({
                     {chapterItems}
                   </SelectContent>
                 </Select>
+              </div>
 
-                <div className="mt-3">
-                  <div className="mb-2 text-[10px] text-muted-foreground">End (Ayah)</div>
-                  <Select value={String(draftEnd.verse)} onValueChange={handleSelectEndRangeAyah}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Ayah" />
-                    </SelectTrigger>
-                    <SelectContent style={{ ['--select-max-height' as never]: '175px' }}>
-                      {endVerseList.map((ayah) => (
-                        <SelectItem key={ayah.verse} value={String(ayah.verse)}>
-                          {ayah.verse}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <div className="mb-1 text-[10px] text-muted-foreground">End (Ayah)</div>
+                <Select value={String(draftEnd.verse)} onValueChange={handleSelectEndRangeAyah}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ayah" />
+                  </SelectTrigger>
+                  <SelectContent style={{ ['--select-max-height' as never]: '175px' }}>
+                    {endVerseList.map((ayah) => (
+                      <SelectItem key={ayah.verse} value={String(ayah.verse)}>
+                        {ayah.verse}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}
 
           {error && <div className="text-sm text-destructive">{error}</div>}
 
-          <DialogFooter>
+          <DialogFooter className="flex-row justify-end gap-2">
             <Button
               variant="secondary"
               className="shadow-none hover:translate-y-0 hover:shadow-none"

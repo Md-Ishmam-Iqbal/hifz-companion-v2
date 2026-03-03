@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Palette, Sparkles } from 'lucide-react'
 
 import type { Ayah, ChapterMetadata, Range } from '@/api/quran'
 import { fetchInitialAyah, fetchMetadata, fetchQuran } from '@/api/quran'
@@ -9,7 +9,50 @@ import SelectRange from '@/components/SelectRange'
 import ThemeSelect from '@/components/ThemeSelect'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+
+type AyahLayout = {
+  sizeClass: string
+  gapClass: string
+  style: CSSProperties
+  lines: string[]
+  totalVisible: number
+}
+
+const AyahText = memo(function AyahText({ layout, style }: { layout: AyahLayout; style: CSSProperties }) {
+  return (
+    <div
+      className={cn(
+        'transition-[opacity,transform] duration-300',
+        'animate-[hcAyahEnter_520ms_cubic-bezier(0.16,1,0.3,1)]',
+        'mx-auto',
+        layout.sizeClass,
+      )}
+      style={style}
+      lang="ar"
+      dir="rtl"
+    >
+      <div
+        className={cn('mx-auto flex max-w-full flex-col items-center text-center leading-[1.25]', layout.gapClass)}
+        style={{ overflowWrap: 'anywhere' }}
+      >
+        {layout.lines.map((line, idx) => (
+          <div key={idx} className="max-w-full px-2">
+            {line}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+})
 
 function randomInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min)
@@ -147,48 +190,56 @@ export default function App() {
     return lines
   }
 
-  const ayahLayout = useMemo(() => {
-    const text = (randomAyah.text || '').trim()
-    const words = text.split(/\s+/).filter(Boolean)
-    const totalVisible = visibleLen(text)
+   const ayahLayout: AyahLayout = useMemo(() => {
+     const text = (randomAyah.text || '').trim()
+     const words = text.split(/\s+/).filter(Boolean)
+     const totalVisible = visibleLen(text)
 
     const lines = breakWordsIntoLines(words, idealLineCount(totalVisible, viewportWidth))
 
     // Use explicit gaps between lines to avoid diacritic collisions.
-    if (totalVisible > 320) {
-      return {
-        sizeClass: 'text-2xl sm:text-3xl lg:text-4xl',
-        gapClass: 'gap-[1.95em] sm:gap-[2.05em]',
-        style: { wordSpacing: '0.18em' } as React.CSSProperties,
-        lines,
-      }
-    }
+     if (totalVisible > 320) {
+       return {
+         sizeClass: 'text-2xl sm:text-3xl lg:text-4xl',
+         gapClass: 'gap-[1.95em] sm:gap-[2.05em]',
+         style: { wordSpacing: '0.18em' } as CSSProperties,
+         lines,
+         totalVisible,
+       }
+     }
 
-    if (totalVisible > 220) {
-      return {
-        sizeClass: 'text-3xl sm:text-4xl lg:text-5xl',
-        gapClass: 'gap-[1.7em] sm:gap-[1.85em]',
-        style: { wordSpacing: '0.17em' } as React.CSSProperties,
-        lines,
-      }
-    }
+     if (totalVisible > 220) {
+       return {
+         sizeClass: 'text-3xl sm:text-4xl lg:text-5xl',
+         gapClass: 'gap-[1.7em] sm:gap-[1.85em]',
+         style: { wordSpacing: '0.17em' } as CSSProperties,
+         lines,
+         totalVisible,
+       }
+     }
 
-    if (totalVisible > 140) {
-      return {
-        sizeClass: 'text-4xl sm:text-5xl lg:text-6xl',
-        gapClass: 'gap-[1.35em] sm:gap-[1.5em]',
-        style: { wordSpacing: '0.16em' } as React.CSSProperties,
-        lines,
-      }
-    }
+     if (totalVisible > 140) {
+       return {
+         sizeClass: 'text-4xl sm:text-5xl lg:text-6xl',
+         gapClass: 'gap-[1.35em] sm:gap-[1.5em]',
+         style: { wordSpacing: '0.16em' } as CSSProperties,
+         lines,
+         totalVisible,
+       }
+     }
 
-    return {
-      sizeClass: 'text-5xl sm:text-6xl lg:text-7xl',
-      gapClass: 'gap-[1.15em] sm:gap-[1.25em]',
-      style: { wordSpacing: '0.14em' } as React.CSSProperties,
-      lines,
-    }
-  }, [randomAyah.text, viewportWidth])
+     return {
+       sizeClass: 'text-5xl sm:text-6xl lg:text-7xl',
+       gapClass: 'gap-[1.15em] sm:gap-[1.25em]',
+       style: { wordSpacing: '0.14em' } as CSSProperties,
+       lines,
+       totalVisible,
+     }
+   }, [randomAyah.text, viewportWidth])
+
+   const ayahTextStyle = useMemo(() => {
+     return { fontFamily: 'var(--font-arabic)', ...ayahLayout.style } as CSSProperties
+   }, [ayahLayout.style])
 
   function updateStartRange(next: Range) {
     setStartRange(next)
@@ -341,6 +392,33 @@ export default function App() {
 
   const controlsMotionClass = 'opacity-100'
 
+  function ThemePickerDialog() {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 rounded-full border-border/60 bg-background/40 shadow-none hover:translate-y-0 hover:border-ring hover:bg-accent hover:text-accent-foreground hover:shadow-none"
+            aria-label="Choose theme"
+          >
+            <Palette className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="w-[min(92vw,420px)]">
+          <DialogHeader>
+            <DialogTitle>Theme</DialogTitle>
+            <DialogDescription>Choose a theme.</DialogDescription>
+          </DialogHeader>
+          <div className="pt-1">
+            <ThemeSelect variant="grid" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
   function ControlsCenterDock() {
     return (
       <div className={cn('mx-auto w-full max-w-5xl transition-all duration-200', controlsMotionClass)}>
@@ -379,6 +457,44 @@ export default function App() {
     )
   }
 
+  function ControlsMobileDock() {
+    return (
+      <div className={cn('mx-auto w-full max-w-2xl transition-all duration-200', controlsMotionClass)}>
+        <div className="grid grid-cols-[44px_1fr_44px] items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 rounded-full text-foreground shadow-none hover:translate-y-0 hover:bg-background/35 hover:text-foreground hover:shadow-none"
+            onClick={handlePrevAyah}
+            aria-label="Previous ayah"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+
+          <Button
+            className="h-11 rounded-full text-base shadow-none hover:translate-y-0 hover:shadow-none"
+            onClick={handleRandomAyah}
+          >
+            <Sparkles className="h-4 w-4" />
+            Random ayah
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 rounded-full text-foreground shadow-none hover:translate-y-0 hover:bg-background/35 hover:text-foreground hover:shadow-none"
+            onClick={handleNextAyah}
+            aria-label="Next ayah"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  const shouldCenterMobileAyah = ayahLayout.totalVisible <= 170 && ayahLayout.lines.length <= 6
+
   if (quranResults.isLoading || metadataResults.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -398,27 +514,20 @@ export default function App() {
   return (
     <main>
       <div className="h-[100dvh] text-[calc(12px+1.2vmin)] text-foreground">
-        <div className="mx-auto grid h-full max-w-[96rem] grid-rows-[auto_auto_1fr] gap-6 px-4 py-8 sm:px-6">
-          <header className="pt-4 sm:pt-6">
-            <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-              <div className="text-center sm:col-start-2 sm:row-start-1">
-                <div
-                  className="text-3xl font-semibold tracking-tight sm:text-4xl"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Hifz Companion
-                </div>
-                <div className="mt-2 text-base text-muted-foreground sm:text-lg">
-                  Calm practice: recite first, then reveal the answer.
+        <div className="mx-auto h-full max-w-[96rem]">
+          {/* Mobile layout */}
+          <div className="flex h-full min-h-0 flex-col px-4 py-4 sm:hidden">
+            <header className="pb-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-2xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+                    Hifz Companion
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">{rangesText}</div>
                 </div>
 
-              </div>
-              <div className="flex justify-center sm:col-start-3 sm:row-start-1 sm:justify-end">
-                <ThemeSelect />
-              </div>
-
-              <div className="flex justify-center sm:col-span-3 sm:row-start-2">
-                <div className="flex flex-wrap items-center justify-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
+                  <ThemePickerDialog />
                   <SelectRange
                     metadata={metaData}
                     startRange={startRange}
@@ -426,91 +535,177 @@ export default function App() {
                     updateStartRange={updateStartRange}
                     updateEndRange={updateEndRange}
                   />
-                  <Badge className="px-3 py-1 text-xs sm:text-sm" variant="secondary">
-                    {rangesText}
-                  </Badge>
                 </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          <div className="pt-6">
-            <ControlsCenterDock />
-          </div>
-
-          <section className="min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain">
-            <div className="mx-auto w-full max-w-[96rem] pb-24 pt-8">
-              {isLoading ? (
-                <div className="flex justify-center py-16">
-                  <LoadingSpinner />
-                </div>
-              ) : (
-                <>
+            <section className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
+              <div className="mx-auto w-full max-w-3xl pb-10 pt-4">
+                {isLoading ? (
+                  <div className="flex justify-center py-12">
+                    <LoadingSpinner />
+                  </div>
+                ) : (
                   <div
-                    key={`${randomAyah.chapter}:${randomAyah.verse}`}
                     className={cn(
-                      'transition-[opacity,transform] duration-300',
-                      'animate-[hcAyahEnter_520ms_cubic-bezier(0.16,1,0.3,1)]',
-                      'mx-auto',
-                      ayahLayout.sizeClass,
+                      shouldCenterMobileAyah ? 'min-h-full flex flex-col justify-center' : '',
                     )}
-                    style={{ fontFamily: 'var(--font-arabic)', ...ayahLayout.style }}
-                    lang="ar"
-                    dir="rtl"
                   >
+                    <div className="pt-2">
+                      <AyahText
+                        key={`${randomAyah.chapter}:${randomAyah.verse}`}
+                        layout={ayahLayout}
+                        style={ayahTextStyle}
+                      />
+                    </div>
+
                     <div
                       className={cn(
-                        'mx-auto flex max-w-full flex-col items-center text-center leading-[1.25]',
-                        ayahLayout.gapClass,
-                      )}
-                      style={{ overflowWrap: 'anywhere' }}
-                    >
-                      {ayahLayout.lines.map((line, idx) => (
-                        <div key={idx} className="max-w-full px-2">
-                          {line}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-14 flex flex-col items-center">
-                    <button
-                      type="button"
-                      onClick={handleToggleAnswer}
-                      className={cn(
-                        'text-base font-medium text-primary underline decoration-primary/40 underline-offset-8 transition-colors',
-                        'hover:text-primary/90 hover:decoration-primary/80',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                        'flex flex-col items-center',
+                        shouldCenterMobileAyah ? 'mt-10' : 'mt-12',
                       )}
                     >
-                      {toggleAnswerText}
-                    </button>
-
-                    <div className="mt-7 w-full max-w-3xl text-center">
-                      <div
+                      <button
+                        type="button"
+                        onClick={handleToggleAnswer}
                         className={cn(
-                          'mx-auto h-px w-full max-w-xl origin-center bg-border transition-[transform,opacity] duration-500',
-                          isAnswerRevealed ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0',
+                          'text-base font-medium text-primary underline decoration-primary/40 underline-offset-8 transition-colors',
+                          'hover:text-primary/90 hover:decoration-primary/80',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                         )}
-                        style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                      />
-
-                      <div
-                        className={cn(
-                          'mt-5 text-2xl font-semibold tracking-tight transition-[transform,opacity] duration-500',
-                          isAnswerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
-                        )}
-                        style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
                       >
-                        {`${surahMetaData.name} [${randomAyah.chapter}:${randomAyah.verse}]`}
+                        {toggleAnswerText}
+                      </button>
+
+                      <div
+                        className={cn(
+                          'w-full max-w-3xl text-center',
+                          shouldCenterMobileAyah ? 'mt-5' : 'mt-6',
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            'mx-auto h-px w-full max-w-xl origin-center bg-border transition-[transform,opacity] duration-500',
+                            isAnswerRevealed ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0',
+                          )}
+                          style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+                        />
+
+                        <div
+                          className={cn(
+                            'text-xl font-semibold tracking-tight transition-[transform,opacity] duration-500',
+                            shouldCenterMobileAyah ? 'mt-3' : 'mt-4',
+                            isAnswerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
+                          )}
+                          style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+                        >
+                          {`${surahMetaData.name} [${randomAyah.chapter}:${randomAyah.verse}]`}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </>
-              )}
-            </div>
-          </section>
+                )}
+              </div>
+            </section>
 
+            <div className="sticky bottom-0 z-10 -mx-4 border-t border-border/60 bg-gradient-to-t from-background/95 via-background/80 to-transparent px-4 pb-[calc(8px+env(safe-area-inset-bottom))] pt-2">
+              <ControlsMobileDock />
+            </div>
+          </div>
+
+          {/* Desktop/tablet layout (original) */}
+          <div className="hidden h-full min-h-0 sm:grid sm:h-full sm:grid-rows-[auto_auto_1fr] sm:gap-6 sm:px-6 sm:py-8">
+            <header className="pt-4 sm:pt-6">
+              <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                <div className="text-center sm:col-start-2 sm:row-start-1">
+                  <div
+                    className="text-3xl font-semibold tracking-tight sm:text-4xl"
+                    style={{ fontFamily: 'var(--font-display)' }}
+                  >
+                    Hifz Companion
+                  </div>
+                  <div className="mt-2 text-base text-muted-foreground sm:text-lg">
+                    Calm practice: recite first, then reveal the answer.
+                  </div>
+                </div>
+
+                <div className="flex justify-center sm:col-start-3 sm:row-start-1 sm:justify-end">
+                  <ThemeSelect />
+                </div>
+
+                <div className="flex justify-center sm:col-span-3 sm:row-start-2">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <SelectRange
+                      metadata={metaData}
+                      startRange={startRange}
+                      endRange={endRange}
+                      updateStartRange={updateStartRange}
+                      updateEndRange={updateEndRange}
+                    />
+                    <Badge className="px-3 py-1 text-xs sm:text-sm" variant="secondary">
+                      {rangesText}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div className="pt-6">
+              <ControlsCenterDock />
+            </div>
+
+            <section className="min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain">
+              <div className="mx-auto w-full max-w-[96rem] pb-24 pt-8">
+                {isLoading ? (
+                  <div className="flex justify-center py-16">
+                    <LoadingSpinner />
+                  </div>
+                ) : (
+                  <>
+                    <AyahText
+                      key={`${randomAyah.chapter}:${randomAyah.verse}`}
+                      layout={ayahLayout}
+                      style={ayahTextStyle}
+                    />
+
+                    <div className="mt-14 flex flex-col items-center">
+                      <button
+                        type="button"
+                        onClick={handleToggleAnswer}
+                        className={cn(
+                          'text-base font-medium text-primary underline decoration-primary/40 underline-offset-8 transition-colors',
+                          'hover:text-primary/90 hover:decoration-primary/80',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                        )}
+                      >
+                        {toggleAnswerText}
+                      </button>
+
+                      <div className="mt-7 w-full max-w-3xl text-center">
+                        <div
+                          className={cn(
+                            'mx-auto h-px w-full max-w-xl origin-center bg-border transition-[transform,opacity] duration-500',
+                            isAnswerRevealed ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0',
+                          )}
+                          style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+                        />
+
+                        <div
+                          className={cn(
+                            'mt-5 text-2xl font-semibold tracking-tight transition-[transform,opacity] duration-500',
+                            isAnswerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
+                          )}
+                          style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+                        >
+                          {`${surahMetaData.name} [${randomAyah.chapter}:${randomAyah.verse}]`}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
