@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { SlidersHorizontal } from 'lucide-react'
 
 import type { ChapterMetadata, ChapterVerseRef, MetadataResponse, Range } from '@/api/quran'
@@ -25,6 +25,7 @@ type Props = {
   endRange: Range
   updateStartRange: (start: Range) => void
   updateEndRange: (end: Range) => void
+  renderTrigger?: (open: () => void) => ReactNode
 }
 
 type Scope = 'juz' | 'single_surah' | 'surah_range' | 'custom'
@@ -35,6 +36,7 @@ export default function SelectRange({
   endRange,
   updateStartRange,
   updateEndRange,
+  renderTrigger,
 }: Props) {
   const [open, setOpen] = useState(false)
 
@@ -204,15 +206,19 @@ export default function SelectRange({
   }
 
   return (
-    <div className="w-fit">
-      <Button
-        variant="outline"
-        className="h-9 gap-2 rounded-full border-border/60 bg-background/40 px-3 text-sm shadow-none hover:translate-y-0 hover:border-ring hover:bg-primary/10 hover:text-foreground hover:shadow-none sm:h-11 sm:px-4"
-        onClick={() => setOpen(true)}
-      >
-        <SlidersHorizontal className="h-4 w-4" />
-        Select range
-      </Button>
+    <div className={renderTrigger ? 'w-full' : 'w-fit'}>
+      {renderTrigger ? (
+        renderTrigger(() => setOpen(true))
+      ) : (
+        <Button
+          variant="outline"
+          className="h-9 gap-2 rounded-full border-border/60 bg-background/40 px-3 text-sm shadow-none hover:translate-y-0 hover:border-ring hover:bg-primary/10 hover:text-foreground hover:shadow-none sm:h-11 sm:px-4"
+          onClick={() => setOpen(true)}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          Select range
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent onInteractOutside={(e) => e.preventDefault()}>

@@ -19,7 +19,7 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'coast',
     label: 'Sea Glass',
-    bg: '#f3fbff',
+    bg: '#f6fbfb',
     border: 'rgba(15, 23, 42, 0.16)',
     accent: '#0e7490',
   },

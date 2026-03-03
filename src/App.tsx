@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronLeft, ChevronRight, Palette, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CircleHelp, Palette, SlidersHorizontal, Sparkles } from 'lucide-react'
 
 import type { Ayah, ChapterMetadata, Range } from '@/api/quran'
 import { fetchInitialAyah, fetchMetadata, fetchQuran } from '@/api/quran'
@@ -118,6 +118,57 @@ export default function App() {
   const rangesText = useMemo(() => {
     return `${startRange.chapter}:${startRange.verse} - ${endRange.chapter}:${endRange.verse}`
   }, [startRange, endRange])
+
+  const rangeLabel = useMemo(() => {
+    if (!metaData) {
+      return {
+        summary: 'Range',
+        detail: rangesText,
+        badge: rangesText,
+      }
+    }
+
+    const surahName = (chapter: number) => {
+      const c = metaData.chapters.find((x) => x.chapter === chapter)
+      return c?.name ?? `Surah ${chapter}`
+    }
+
+    const ref = (c: number, v: number) => `${c}:${v}`
+
+    const juzMatch = metaData.juzs.references.find(
+      (j) =>
+        j.start.chapter === startRange.chapter &&
+        j.start.verse === startRange.verse &&
+        j.end.chapter === endRange.chapter &&
+        j.end.verse === endRange.verse,
+    )
+
+    const startName = surahName(startRange.chapter)
+    const endName = surahName(endRange.chapter)
+
+    const summary = juzMatch ? `Range · Juz ${juzMatch.juz}` : 'Range'
+
+    if (startRange.chapter === endRange.chapter) {
+      const name = startName
+      const detail =
+        startRange.verse === endRange.verse
+          ? `${name} (${ref(startRange.chapter, startRange.verse)})`
+          : `${name} (${startRange.chapter}:${startRange.verse}–${endRange.verse})`
+
+      return {
+        summary,
+        detail,
+        badge: juzMatch ? `Juz ${juzMatch.juz} · ${detail}` : detail,
+      }
+    }
+
+    const detail = `${startName} (${ref(startRange.chapter, startRange.verse)}) - ${endName} (${ref(endRange.chapter, endRange.verse)})`
+    return {
+      summary,
+      detail,
+      badge: juzMatch ? `Juz ${juzMatch.juz} · ${detail}` : detail,
+    }
+  }, [metaData, startRange, endRange, rangesText])
 
   function stripArabicMarks(s: string) {
     return s.replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
@@ -393,6 +444,63 @@ export default function App() {
 
   const controlsMotionClass = 'opacity-100'
 
+  function HowItWorksDialog({ ui = 'text' }: { ui?: 'text' | 'icon' }) {
+    const trigger =
+      ui === 'icon' ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 rounded-full border-border/60 bg-background/40 shadow-none hover:translate-y-0 hover:border-ring hover:bg-accent hover:text-accent-foreground hover:shadow-none"
+          aria-label="How it works"
+        >
+          <CircleHelp className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-8 gap-2 rounded-full px-3 text-xs text-muted-foreground shadow-none hover:translate-y-0 hover:bg-background/35 hover:text-foreground hover:shadow-none"
+        >
+          <CircleHelp className="h-4 w-4" />
+          How it works
+        </Button>
+      )
+
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          {trigger}
+        </DialogTrigger>
+        <DialogContent className="w-[min(92vw,520px)]">
+          <DialogHeader>
+            <DialogTitle>How it works</DialogTitle>
+            <DialogDescription>A quick revision drill: recall, identify, then verify.</DialogDescription>
+          </DialogHeader>
+
+          <ol className="space-y-2 text-sm text-muted-foreground">
+            <li>
+              <span className="font-medium text-foreground">1.</span> Tap <span className="font-medium text-foreground">New test</span>.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">2.</span> Identify the surah and ayah number in your head.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">3.</span> Recite from memory, then continue into the next ayah to confirm the flow.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">4.</span> Tap <span className="font-medium text-foreground">Reveal answer</span> to verify the reference.
+            </li>
+            <li>
+              <span className="font-medium text-foreground">5.</span> Use <span className="font-medium text-foreground">previous</span>/<span className="font-medium text-foreground">next</span>, or change the range to focus.
+            </li>
+          </ol>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
   function ThemePickerDialog() {
     return (
       <Dialog>
@@ -440,7 +548,10 @@ export default function App() {
                 onClick={handleRandomAyah}
               >
                 <Sparkles className="h-4 w-4" />
-                Random ayah
+                <span className="flex flex-col items-center leading-tight">
+                  <span className="font-medium">New test</span>
+                  <span className="text-[11px] opacity-85">Random ayah</span>
+                </span>
               </Button>
 
               <Button
@@ -473,11 +584,14 @@ export default function App() {
           </Button>
 
           <Button
-            className="h-11 rounded-full text-base shadow-none hover:translate-y-0 hover:shadow-none"
+            className="h-12 rounded-full text-base shadow-none hover:translate-y-0 hover:shadow-none"
             onClick={handleRandomAyah}
           >
             <Sparkles className="h-4 w-4" />
-            Random ayah
+            <span className="flex flex-col items-center leading-tight">
+              <span className="font-medium">New test</span>
+              <span className="text-[10px] opacity-85">Random ayah</span>
+            </span>
           </Button>
 
           <Button
@@ -524,18 +638,49 @@ export default function App() {
                   <div className="text-2xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
                     Hifz Companion
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">{rangesText}</div>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
                   <InstallPwaButton ui="header" />
+                  <HowItWorksDialog ui="icon" />
                   <ThemePickerDialog />
+                </div>
+              </div>
+
+              <div className="mt-2">
+                <div className="text-xs leading-snug text-muted-foreground">
+                  Recite, identify, then reveal to verify.
+                </div>
+
+                <div className="mt-2 flex justify-center">
                   <SelectRange
                     metadata={metaData}
                     startRange={startRange}
                     endRange={endRange}
                     updateStartRange={updateStartRange}
                     updateEndRange={updateEndRange}
+                    renderTrigger={(open) => (
+                      <button
+                        type="button"
+                        onClick={open}
+                        className={cn(
+                          'w-full max-w-[420px] cursor-pointer rounded-2xl border border-border/60 bg-background/40 px-4 py-3 text-left shadow-sm',
+                          'transition-[transform,background-color,border-color,box-shadow] active:translate-y-px active:bg-background/60 active:shadow-none',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                        )}
+                        title={rangesText}
+                        aria-label="Select range"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="text-[11px] font-semibold text-muted-foreground">{rangeLabel.summary}</div>
+                          <div className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/30 px-2 py-1 text-muted-foreground/85">
+                            <SlidersHorizontal className="h-4 w-4" />
+                            <ChevronRight className="h-4 w-4" />
+                          </div>
+                        </div>
+                        <div className="mt-1 text-xs font-medium leading-snug text-foreground/85">{rangeLabel.detail}</div>
+                      </button>
+                    )}
                   />
                 </div>
               </div>
@@ -627,7 +772,10 @@ export default function App() {
                     Hifz Companion
                   </div>
                   <div className="mt-2 text-base text-muted-foreground sm:text-lg">
-                    Calm practice: recite first, then reveal the answer.
+                    Recite, identify, then reveal to verify.
+                  </div>
+                  <div className="mt-2 flex justify-center">
+                    <HowItWorksDialog ui="text" />
                   </div>
                 </div>
 
@@ -645,8 +793,8 @@ export default function App() {
                       updateStartRange={updateStartRange}
                       updateEndRange={updateEndRange}
                     />
-                    <Badge className="px-3 py-1 text-xs sm:text-sm" variant="secondary">
-                      {rangesText}
+                    <Badge className="px-3 py-1 text-xs sm:text-sm" variant="secondary" title={rangesText}>
+                      {rangeLabel.badge}
                     </Badge>
                   </div>
                 </div>
