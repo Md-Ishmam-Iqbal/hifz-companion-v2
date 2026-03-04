@@ -780,7 +780,6 @@ export default function App() {
                 </div>
 
                 <div className="flex justify-center gap-2 sm:col-start-3 sm:row-start-1 sm:justify-end">
-                  <InstallPwaButton ui="header" />
                   <ThemeSelect />
                 </div>
 
